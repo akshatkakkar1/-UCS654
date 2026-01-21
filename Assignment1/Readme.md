@@ -183,6 +183,3 @@ This assignment successfully demonstrates the application of probability theory 
 
 ---
 
-**Course:** UCS654 - Predictive Analysis Using Statistics  
-**Institution:** University Institute of Engineering  
-**Semester:** January 2026
