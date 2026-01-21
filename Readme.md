@@ -1,0 +1,1 @@
+All Assignments of UCS654 course
