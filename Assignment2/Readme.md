@@ -77,7 +77,8 @@ The discriminator classifies whether a given sample is real or generated.
 ## 📈 Results
 
 ### PDF Plot
-![Uploading image.png…]()
+<img width="715" height="460" alt="im" src="https://github.com/user-attachments/assets/7de26b0f-349e-4620-a8fe-207e6ed23102" />
+
 
 
 ---
