@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import os
 import re
 import smtplib
+import tempfile
 from email.message import EmailMessage
 from topsis_logic import run_topsis
 from dotenv import load_dotenv
@@ -10,12 +11,6 @@ from dotenv import load_dotenv
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '..', '.env'))
 
 app = Flask(__name__)
-
-UPLOAD_FOLDER = "uploads"
-OUTPUT_FOLDER = "outputs"
-
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 # Load credentials from environment variables
 SENDER_EMAIL = os.getenv("SENDER_EMAIL")
@@ -45,33 +40,44 @@ def submit():
         if len(weights_list) != len(impacts_list):
             return render_template("index.html", message="Weights and impacts count mismatch")
 
-        input_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        output_path = os.path.join(OUTPUT_FOLDER, "result.csv")
+        # Create temporary files that will be automatically deleted
+        with tempfile.NamedTemporaryFile(mode='wb', suffix='.csv', delete=False) as temp_input:
+            file.save(temp_input.name)
+            input_path = temp_input.name
+        
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as temp_output:
+            output_path = temp_output.name
 
-        file.save(input_path)
+        try:
+            run_topsis(input_path, weights_list, impacts_list, output_path)
 
-        run_topsis(input_path, weights_list, impacts_list, output_path)
+            # Send email
+            msg = EmailMessage()
+            msg["Subject"] = "TOPSIS Result"
+            msg["From"] = SENDER_EMAIL
+            msg["To"] = email
+            msg.set_content("Please find the TOPSIS result attached.")
 
-        # Send email
-        msg = EmailMessage()
-        msg["Subject"] = "TOPSIS Result"
-        msg["From"] = SENDER_EMAIL
-        msg["To"] = email
-        msg.set_content("Please find the TOPSIS result attached.")
+            with open(output_path, "rb") as f:
+                msg.add_attachment(
+                    f.read(),
+                    maintype="text",
+                    subtype="csv",
+                    filename="result.csv"
+                )
 
-        with open(output_path, "rb") as f:
-            msg.add_attachment(
-                f.read(),
-                maintype="text",
-                subtype="csv",
-                filename="result.csv"
-            )
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+                server.login(SENDER_EMAIL, APP_PASSWORD)
+                server.send_message(msg)
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(SENDER_EMAIL, APP_PASSWORD)
-            server.send_message(msg)
-
-        return render_template("index.html", message="Result sent successfully via email")
+            return render_template("index.html", message="Result sent successfully via email")
+        
+        finally:
+            # Clean up temporary files
+            if os.path.exists(input_path):
+                os.remove(input_path)
+            if os.path.exists(output_path):
+                os.remove(output_path)
 
     except Exception as e:
         return render_template("index.html", message=str(e))

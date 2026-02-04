@@ -87,24 +87,49 @@ Original data with two additional columns:
 ## 📦 Part 2: TOPSIS Python Package
 
 ### Description
-TOPSIS implemented as a reusable Python package/module.
+TOPSIS implemented as a distributable Python package published on PyPI.
 
-### Location
-```
-Part2/Topsis/topsis.py
+### 🔗 PyPI Package
+**Package Name**: `Topsis-Akshat-102303730`  
+**PyPI Link**: [https://pypi.org/project/Topsis-Akshat-102303730/1.0.0/](https://pypi.org/project/Topsis-Akshat-102303730/1.0.0/)
+
+### Installation
+```bash
+pip install Topsis-Akshat-102303730
 ```
 
 ### Usage
-```python
-from Topsis import topsis
 
-topsis.main()  # Call with sys.argv parameters
+#### As a Command-Line Tool:
+```bash
+topsis <InputDataFile> <Weights> <Impacts> <ResultFileName>
 ```
 
-Or use as a command-line tool:
+#### Example:
 ```bash
-cd Part2/Topsis
-python3 topsis.py <InputDataFile> <Weights> <Impacts> <ResultFileName>
+topsis data.csv "1,1,1,2" "+,+,-,+" result.csv
+```
+
+#### As a Python Module:
+```python
+from Topsis import main
+import sys
+
+# Set command line arguments
+sys.argv = ['topsis', 'data.csv', '1,1,1,2', '+,+,-,+', 'result.csv']
+main()
+```
+
+### Package Structure
+```
+Part2/
+├── Topsis/
+│   ├── __init__.py
+│   └── topsis.py
+├── setup.py
+├── README.md
+├── LICENSE
+└── MANIFEST.in
 ```
 
 ---
