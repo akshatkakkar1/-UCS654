@@ -126,7 +126,8 @@ For each simulation run, the following metrics are recorded:
 
 ### 📉 Visualization
 
-A bar chart comparing R² scores shows clear performance hierarchy:
+<img width="1124" height="888" alt="image" src="https://github.com/user-attachments/assets/d8b871b3-c459-4451-b903-bfb69e22a2b0" />
+
 - Random Forest and XGBoost dominate with R² > 0.89
 - Tree-based models cluster in the 0.83-0.91 range
 - Linear models lag behind significantly
