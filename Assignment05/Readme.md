@@ -95,6 +95,7 @@ Below is the TOPSIS score comparison across domains:
 <br>
 
 
+<img width="942" height="958" alt="image" src="https://github.com/user-attachments/assets/141112a4-4c45-4163-9563-b2881c5002b2" />
 
 <br>
 
