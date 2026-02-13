@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Mashup Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .input-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .message.active {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .message-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .emoji {
+            font-size: 24px;
+            margin-right: 10px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #999;
+            font-size: 12px;
+        }
+
+        .error-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .error-list li {
+            padding: 5px 0;
+        }
+
+        .error-list li:before {
+            content: "⚠️ ";
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎵 YouTube Mashup Generator</h1>
+        <p class="subtitle">Create amazing mashups and get them via email!</p>
+
+        <form id="mashupForm">
+            <div class="form-group">
+                <label for="singerName">Singer Name</label>
+                <input 
+                    type="text" 
+                    id="singerName" 
+                    name="singer_name" 
+                    placeholder="e.g., Sharry Maan" 
+                    required
+                >
+                <div class="input-hint">Enter the name of your favorite singer</div>
+            </div>
+
+            <div class="form-group">
+                <label for="numVideos"># of Videos</label>
+                <input 
+                    type="number" 
+                    id="numVideos" 
+                    name="num_videos" 
+                    placeholder="e.g., 20" 
+                    min="11" 
+                    required
+                >
+                <div class="input-hint">Number of videos to include (must be greater than 10)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="duration">Duration of Each Video (seconds)</label>
+                <input 
+                    type="number" 
+                    id="duration" 
+                    name="duration" 
+                    placeholder="e.g., 30" 
+                    min="21" 
+                    required
+                >
+                <div class="input-hint">Duration to cut from each video (min: 21 seconds)</div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email ID</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    name="email" 
+                    placeholder="e.g., your email@gmail.com" 
+                    required
+                >
+                <div class="input-hint">You'll receive the mashup zip file here</div>
+            </div>
+
+            <button type="submit" id="submitBtn">
+                <span class="emoji">🎵</span> Generate Mashup
+            </button>
+        </form>
+
+        <div class="loading" id="loadingDiv">
+            <div class="spinner"></div>
+            <p>Creating your mashup... This may take a few minutes.</p>
+        </div>
+
+        <div class="message" id="messageDiv">
+            <div class="message-title" id="messageTitle"></div>
+            <div id="messageContent"></div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 YouTube Mashup Service | Made by Akshat (102303730)</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('mashupForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingDiv = document.getElementById('loadingDiv');
+        const messageDiv = document.getElementById('messageDiv');
+        const messageTitle = document.getElementById('messageTitle');
+        const messageContent = document.getElementById('messageContent');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Hide previous messages
+            messageDiv.classList.remove('active', 'success', 'error');
+            loadingDiv.classList.add('active');
+            submitBtn.disabled = true;
+
+            // Get form data
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/generate-mashup', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                // Hide loading
+                loadingDiv.classList.remove('active');
+                submitBtn.disabled = false;
+
+                // Show message
+                messageDiv.classList.add('active');
+
+                if (data.success) {
+                    // Success
+                    messageDiv.classList.add('success');
+                    messageTitle.innerHTML = '✅ Success!';
+                    messageContent.innerHTML = `
+                        <p>${data.message}</p>
+                        <p style="margin-top: 10px;"><strong>Estimated time:</strong> ${data.estimated_time}</p>
+                        <p style="margin-top: 10px; font-size: 12px;">Please check your email inbox (and spam folder) in a few minutes.</p>
+                    `;
+                    
+                    // Reset form
+                    form.reset();
+                } else {
+                    // Error
+                    messageDiv.classList.add('error');
+                    messageTitle.innerHTML = '❌ Error';
+                    
+                    if (data.errors && data.errors.length > 0) {
+                        let errorHtml = '<ul class="error-list">';
+                        data.errors.forEach(error => {
+                            errorHtml += `<li>${error}</li>`;
+                        });
+                        errorHtml += '</ul>';
+                        messageContent.innerHTML = errorHtml;
+                    } else {
+                        messageContent.innerHTML = '<p>An error occurred. Please try again.</p>';
+                    }
+                }
+
+            } catch (error) {
+                loadingDiv.classList.remove('active');
+                submitBtn.disabled = false;
+                
+                messageDiv.classList.add('active', 'error');
+                messageTitle.innerHTML = '❌ Connection Error';
+                messageContent.innerHTML = '<p>Could not connect to server. Please check if the server is running.</p>';
+            }
+        });
+
+        // Auto-hide message after 10 seconds
+        setInterval(() => {
+            if (messageDiv.classList.contains('active')) {
+                setTimeout(() => {
+                    messageDiv.classList.remove('active');
+                }, 10000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
